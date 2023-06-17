@@ -1,0 +1,3046 @@
+1
+01:00:00,041 --> 01:00:01,458
+Welcome everyone
+
+2
+01:00:01,458 --> 01:00:07,166
+My name is Konstantin and I like to code
+
+3
+01:00:08,583 --> 01:00:14,166
+Video that you will see today is kind of an experiment
+
+4
+01:00:14,375 --> 01:00:17,375
+I'm gonna do some live coding
+
+5
+01:00:19,166 --> 01:00:21,791
+There was one podcast
+
+6
+01:00:21,791 --> 01:00:24,791
+I was listenting to recently
+
+7
+01:00:24,791 --> 01:00:27,583
+It's called "Odin Doma"
+
+8
+01:00:27,583 --> 01:00:30,583
+or, in English, "Home Alone"
+
+9
+01:00:30,583 --> 01:00:32,750
+This podcast is in Russian language, so
+
+10
+01:00:32,750 --> 01:00:34,583
+I'm not sure how this is relevant to you,
+
+11
+01:00:34,583 --> 01:00:36,916
+but what what caught my eye recently
+
+12
+01:00:36,916 --> 01:00:39,916
+when I was listening to this podcast
+
+13
+01:00:39,916 --> 01:00:44,250
+is that it has really good intro and outro music
+
+14
+01:00:44,250 --> 01:00:49,583
+Which I'd like to collect somehow and
+
+15
+01:00:49,583 --> 01:00:52,583
+listen to this music alone 
+
+16
+01:00:54,916 --> 01:00:58,666
+So, here is the task...
+
+17
+01:01:01,666 --> 01:01:04,875
+I'm gonna toggle floating notes
+
+18
+01:01:04,875 --> 01:01:07,208
+The task is to...
+
+19
+01:01:07,875 --> 01:01:20,458
+get intro and outro audio from podcast
+
+20
+01:01:20,458 --> 01:01:24,708
+And here is the URL of the particular episode,
+
+21
+01:01:24,708 --> 01:01:28,000
+what we want is the podcast itself
+
+22
+01:01:34,833 --> 01:01:44,166
+So, and, I mean, ideally, I want to save all
+
+23
+01:01:44,166 --> 01:01:49,958
+these tracks to Spotify playlist
+
+24
+01:01:51,000 --> 01:01:54,916
+So every podcast, as you may know,
+
+25
+01:01:54,916 --> 01:01:57,208
+is an RSS feed
+
+26
+01:02:00,291 --> 01:02:03,166
+Which looks like this
+
+27
+01:02:03,958 --> 01:02:07,083
+Let's look at this in the console
+
+28
+01:02:08,375 --> 01:02:11,041
+I did some preparation a few minutes before
+
+29
+01:02:11,041 --> 01:02:13,250
+just to look into this
+
+30
+01:02:14,125 --> 01:02:18,291
+This is an XML file with
+
+31
+01:02:18,500 --> 01:02:22,375
+some description of the podcast and episodes
+
+32
+01:02:22,375 --> 01:02:23,375
+There is
+
+33
+01:02:25,208 --> 01:02:28,416
+item for each episode with description,
+
+34
+01:02:28,416 --> 01:02:30,958
+which is HTML,
+
+35
+01:02:30,958 --> 01:02:34,791
+and with iTunes summary in plain text,
+
+36
+01:02:34,791 --> 01:02:42,083
+and also "content:encoded", also
+HTML, but escaped HTML characters
+
+37
+01:02:44,625 --> 01:02:49,000
+The easiest thing would be is to parse them from
+
+38
+01:02:49,000 --> 01:02:52,500
+iTunes summary because it's a plain text
+
+39
+01:02:52,500 --> 01:02:56,625
+And I could do just some regexp extraction
+
+40
+01:02:56,625 --> 01:02:59,250
+of these tracks
+
+41
+01:03:00,625 --> 01:03:05,458
+And I'm gonna use Chrome for that, let's see...
+
+42
+01:03:05,458 --> 01:03:06,750
+Oh, sorry, not Chrome,
+
+43
+01:03:06,750 --> 01:03:11,833
+I'm gonna use Go to do all of that stuff
+
+44
+01:03:11,833 --> 01:03:14,791
+First of all, let's create a new repo
+
+45
+01:03:14,791 --> 01:03:17,083
+repo.new
+
+46
+01:03:18,375 --> 01:03:22,375
+And I will be an owner, the repo name
+
+47
+01:03:22,375 --> 01:03:28,166
+"odindoma-music"
+
+48
+01:03:28,166 --> 01:03:31,375
+I'll keep it private for now, License...
+
+49
+01:03:31,375 --> 01:03:34,333
+MIT, why not?
+
+50
+01:03:34,333 --> 01:03:35,875
+Git ignore...
+
+51
+01:03:35,875 --> 01:03:38,041
+maybe you have something for Go?
+
+52
+01:03:38,041 --> 01:03:42,583
+Yeah, some default Go .gitignore
+
+53
+01:03:42,583 --> 01:03:46,708
+Create the repo, and now it's empty
+
+54
+01:03:46,708 --> 01:03:48,833
+Ok, let's clone it
+
+55
+01:03:52,041 --> 01:03:55,125
+I use my own alias to put
+
+56
+01:03:55,125 --> 01:03:57,750
+projects where I want them to be
+
+57
+01:03:57,750 --> 01:04:01,166
+regardless from where I run this command from
+
+58
+01:04:03,541 --> 01:04:04,541
+And I open...
+
+59
+01:04:04,541 --> 01:04:06,916
+I use VSCode to do all of the development
+
+60
+01:04:06,916 --> 01:04:08,708
+Let's zoom in a bit
+
+61
+01:04:09,750 --> 01:04:12,666
+With every project I start with
+
+62
+01:04:12,666 --> 01:04:15,291
+main.go file, of course
+
+63
+01:04:15,291 --> 01:04:18,250
+Typing all of things myself,
+
+64
+01:04:18,250 --> 01:04:21,333
+well, with some Copilot help
+
+65
+01:04:42,583 --> 01:04:49,791
+go mod init, OdinDoma music
+
+66
+01:04:50,208 --> 01:04:52,458
+go mod tidy
+
+67
+01:04:53,833 --> 01:04:57,416
+Created go.mod file, no dependencies
+
+68
+01:04:57,416 --> 01:05:00,208
+of course not
+
+69
+01:05:00,208 --> 01:05:01,500
+"Should have a package comment",
+
+70
+01:05:01,500 --> 01:05:03,375
+alright, let's make one
+
+71
+01:05:05,750 --> 01:05:11,250
+A small app to parse RSS feed for
+
+72
+01:05:11,250 --> 01:05:15,541
+Odin Doma podcast 
+
+73
+01:05:15,541 --> 01:05:18,375
+and save tracks...
+
+74
+01:05:18,375 --> 01:05:23,000
+Well, let's start with "print"...
+
+75
+01:05:23,000 --> 01:05:24,750
+"print out"...
+
+76
+01:05:25,500 --> 01:05:27,750
+"the tracks"
+
+77
+01:05:31,375 --> 01:05:33,625
+And we will need to
+
+78
+01:05:33,625 --> 01:05:36,625
+get the actual feed from there, so...
+
+79
+01:05:42,208 --> 01:05:44,583
+Feed URL is...
+
+80
+01:05:46,833 --> 01:05:47,875
+this one
+
+81
+01:05:54,791 --> 01:05:57,416
+Still need to log "Starting..."
+
+82
+01:06:02,000 --> 01:06:05,166
+And I prefer to do this thing with "run"
+
+83
+01:06:05,166 --> 01:06:07,250
+just to
+
+84
+01:06:07,250 --> 01:06:09,458
+track errors
+
+85
+01:06:12,083 --> 01:06:14,166
+Run...
+
+86
+01:06:36,166 --> 01:06:40,166
+Alright, let's try to run this small program
+
+87
+01:06:45,208 --> 01:06:46,625
+Good
+
+88
+01:06:46,833 --> 01:06:50,291
+Now, we need to actually grab content
+
+89
+01:06:51,208 --> 01:06:53,250
+Now, we need to actually grab content
+
+90
+01:06:53,250 --> 01:06:55,041
+from this URL
+
+91
+01:06:57,958 --> 01:07:03,541
+To do that we will use the standard HTTP client,
+
+92
+01:07:03,541 --> 01:07:10,375
+we will get bytes from this feed URL
+
+93
+01:07:11,666 --> 01:07:13,750
+If it fails return the error,
+
+94
+01:07:13,750 --> 01:07:19,416
+or rather, wrap the error with some meaningful message
+
+95
+01:07:19,416 --> 01:07:23,625
+Don't forget to close the body and...
+
+96
+01:07:23,625 --> 01:07:27,083
+I need to read the whole bytes array, so...
+
+97
+01:07:27,083 --> 01:07:30,666
+unless we can use decoder with...
+
+98
+01:07:30,666 --> 01:07:35,916
+decoder that reads Reader right away.
+
+99
+01:07:40,041 --> 01:07:43,291
+Let's make sure that bytes are there first, so...
+
+100
+01:07:43,291 --> 01:07:45,208
+Printf...
+
+101
+01:07:58,541 --> 01:08:01,791
+This will actually be response
+
+102
+01:08:15,333 --> 01:08:17,583
+Here we go, all of the body
+
+103
+01:08:18,791 --> 01:08:21,333
+Now we need to parse this XML
+
+104
+01:08:23,500 --> 01:08:27,166
+To decode it first,
+
+105
+01:08:27,166 --> 01:08:30,000
+let's make some...
+
+106
+01:08:31,708 --> 01:08:33,666
+Podcast inter...
+
+107
+01:08:33,666 --> 01:08:35,750
+eh, struct
+
+108
+01:08:35,750 --> 01:08:36,875
+where I will need to...
+
+109
+01:08:36,875 --> 01:08:39,000
+we will parse it into
+
+110
+01:08:39,000 --> 01:08:41,875
+I may not need it all, but...
+
+111
+01:08:43,041 --> 01:08:46,041
+I'm gonna parse just a few first things
+
+112
+01:08:53,625 --> 01:08:56,000
+So, XML, channel,
+
+113
+01:08:59,833 --> 01:09:03,666
+XMLName, channel
+
+114
+01:09:09,291 --> 01:09:12,541
+Probably, Title, yeah?
+
+115
+01:09:16,166 --> 01:09:18,250
+I don't know, let's...
+
+116
+01:09:18,250 --> 01:09:23,708
+And variable where we will read this into
+
+117
+01:09:24,500 --> 01:09:30,291
+And unmarshal these bytes into the structure
+
+118
+01:09:39,000 --> 01:09:40,541
+Will this work?
+
+119
+01:09:40,541 --> 01:09:42,750
+Oops, alright
+
+120
+01:09:44,000 --> 01:09:46,875
+We parsed the XML
+
+121
+01:09:48,916 --> 01:09:52,875
+Originally I was thinging about including some
+
+122
+01:09:52,875 --> 01:09:55,750
+library to parse XML,
+
+123
+01:09:55,750 --> 01:09:58,750
+to not write strucure myself, but now
+
+124
+01:09:58,750 --> 01:10:00,791
+it's kinda pretty simple,
+
+125
+01:10:00,791 --> 01:10:03,375
+so I don't want to do this anymore
+
+126
+01:10:03,625 --> 01:10:08,458
+Let's just write it ourself for this thing
+
+127
+01:10:10,333 --> 01:10:12,666
+We need all the items
+
+128
+01:10:17,416 --> 01:10:21,083
+All we really need from the item is iTunes summary
+
+129
+01:10:29,541 --> 01:10:32,416
+Don't need this anymore, don't need this...
+
+130
+01:10:38,833 --> 01:10:40,666
+Will make this unexproted
+
+131
+01:10:45,500 --> 01:10:47,958
+Let's iterate over the items,
+
+132
+01:10:49,291 --> 01:10:51,208
+printing just the summary
+
+133
+01:10:53,708 --> 01:10:55,291
+Something didn't work well
+
+134
+01:10:57,750 --> 01:10:58,625
+What is it?
+
+135
+01:11:00,291 --> 01:11:03,000
+Item, channel,
+
+136
+01:11:03,000 --> 01:11:04,125
+item
+
+137
+01:11:06,916 --> 01:11:08,708
+itunes:summary
+
+138
+01:11:08,916 --> 01:11:10,708
+from the item
+
+139
+01:11:14,500 --> 01:11:17,333
+Let's see if any other fields are decoded,
+
+140
+01:11:17,333 --> 01:11:18,125
+like Title
+
+141
+01:11:23,083 --> 01:11:25,291
+Oh, in the Item I meant
+
+142
+01:11:25,958 --> 01:11:28,291
+Title on the item...
+
+143
+01:11:34,500 --> 01:11:39,416
+Nope, I suspect the whole item array is empty
+
+144
+01:11:45,083 --> 01:11:48,583
+Yeah, something wrong with this struct
+
+145
+01:11:52,750 --> 01:11:57,291
+Channel and item, ...
+
+146
+01:12:02,375 --> 01:12:03,333
+So...
+
+147
+01:12:04,541 --> 01:12:05,916
+What is wrong with this?
+
+148
+01:12:05,916 --> 01:12:08,750
+Oh, oh, I think missed this one
+
+149
+01:12:11,166 --> 01:12:12,166
+Yey!
+
+150
+01:12:12,416 --> 01:12:13,416
+What?
+
+151
+01:12:13,750 --> 01:12:14,750
+Alright
+
+152
+01:12:16,291 --> 01:12:20,541
+We got all the items, now
+
+153
+01:12:21,041 --> 01:12:23,458
+let's check the body
+
+154
+01:12:29,958 --> 01:12:31,208
+Not really
+
+155
+01:12:34,333 --> 01:12:35,083
+Is it?
+
+156
+01:12:35,083 --> 01:12:36,875
+"itunes:summary"
+
+157
+01:12:36,875 --> 01:12:38,583
+"itunes:summary"
+
+158
+01:12:40,500 --> 01:12:41,666
+yeah
+
+159
+01:12:46,000 --> 01:12:49,000
+What about description?
+
+160
+01:12:59,375 --> 01:13:01,875
+It is there, but not summary?
+
+161
+01:13:02,958 --> 01:13:06,166
+Do I need to escape it somehow, maybe?
+
+162
+01:13:10,416 --> 01:13:14,666
+I don't know, just trying something
+
+163
+01:13:16,500 --> 01:13:20,666
+Well, well... alright let's see
+
+164
+01:13:22,166 --> 01:13:23,875
+XML
+
+165
+01:13:26,125 --> 01:13:29,166
+decoder go 
+
+166
+01:13:30,708 --> 01:13:32,291
+colon
+
+167
+01:13:33,750 --> 01:13:36,333
+"How to unmarshal parameter with colon"
+
+168
+01:13:36,333 --> 01:13:37,875
+Yes, how to do this?
+
+169
+01:13:37,875 --> 01:13:38,958
+Space?
+
+170
+01:13:40,166 --> 01:13:42,333
+Space? Alright
+
+171
+01:13:55,125 --> 01:13:57,000
+Still empty
+
+172
+01:14:02,708 --> 01:14:06,000
+"Unmarshal", "abc:name"
+Namespace
+
+173
+01:14:06,000 --> 01:14:07,916
+Namespace
+
+174
+01:16:16,958 --> 01:16:23,666
+"XMLName field has an associated tag of the
+form "name" or "namepsace-URL name...""
+
+175
+01:16:23,666 --> 01:16:27,708
+"must have the given name (and, optionally, name space)"
+
+176
+01:16:29,833 --> 01:16:31,833
+Maybe,
+
+177
+01:16:39,166 --> 01:16:40,416
+I don't know
+
+178
+01:16:43,416 --> 01:16:45,000
+Yay,
+
+179
+01:16:46,541 --> 01:16:49,625
+alright, we got all the summaries
+
+180
+01:16:50,625 --> 01:16:51,625
+Here they are,
+
+181
+01:16:51,625 --> 01:16:54,416
+Next step is to
+
+182
+01:16:54,416 --> 01:16:55,916
+parse
+
+183
+01:16:57,041 --> 01:17:00,333
+intro and outro audios
+
+184
+01:17:01,208 --> 01:17:02,875
+Let's look at them...
+
+185
+01:17:09,291 --> 01:17:14,416
+Intro podcast and outro
+
+186
+01:17:51,833 --> 01:17:58,916
+Let's go to regex101.com to make/test such regexp
+
+187
+01:18:02,666 --> 01:18:07,375
+So, imagine our
+
+188
+01:18:07,375 --> 01:18:09,791
+text is like this
+
+189
+01:18:15,708 --> 01:18:20,083
+Well, no, I don't want line numbers in there
+
+190
+01:19:24,458 --> 01:19:27,625
+The thing is I want this to be multi-line,
+
+191
+01:19:27,625 --> 01:19:30,208
+there are multiple things per item
+
+192
+01:19:34,416 --> 01:19:38,875
+Let's test it only for first matching item
+
+193
+01:19:39,625 --> 01:19:42,416
+Don't need to replace
+
+194
+01:19:42,416 --> 01:19:45,208
+And not on the Title, but on summary
+
+195
+01:19:46,625 --> 01:19:48,416
+Let's just print the first summary
+
+196
+01:19:48,416 --> 01:19:51,000
+that matches that regexp
+
+197
+01:19:52,208 --> 01:19:53,666
+No... nice
+
+198
+01:19:56,791 --> 01:19:57,708
+"MatchString"...
+
+199
+01:20:08,375 --> 01:20:11,375
+Does Go support multiline regexp match?
+
+200
+01:20:22,125 --> 01:20:24,333
+Seems like it does
+
+201
+01:20:30,041 --> 01:20:31,791
+Will that work?
+
+202
+01:20:32,916 --> 01:20:34,083
+Yay
+
+203
+01:20:34,083 --> 01:20:35,958
+Alright
+
+204
+01:20:35,958 --> 01:20:38,500
+So we got the first
+
+205
+01:20:40,416 --> 01:20:41,583
+match
+
+206
+01:20:41,583 --> 01:20:44,666
+now we need to extract information from there
+
+207
+01:20:52,416 --> 01:20:54,666
+This is just the one?
+
+208
+01:20:54,666 --> 01:20:56,208
+And not both
+
+209
+01:20:58,583 --> 01:21:01,916
+Which means we need something like
+
+210
+01:21:01,916 --> 01:21:05,250
+FindStringSubmatchAll, you know?
+
+211
+01:21:05,250 --> 01:21:08,166
+FindStringAll, All!
+
+212
+01:21:08,166 --> 01:21:10,000
+I just need all
+FindAllSubmatch... maybe?
+
+213
+01:21:10,541 --> 01:21:12,958
+FindAllSubmatch...
+
+214
+01:21:14,916 --> 01:21:15,666
+maybe?
+
+215
+01:21:18,500 --> 01:21:23,875
+FindAllStringSubmatch
+
+216
+01:22:03,250 --> 01:22:06,333
+Ok, Intro this track,
+
+217
+01:22:06,333 --> 01:22:09,375
+Outro this track
+
+218
+01:22:09,375 --> 01:22:12,500
+Looks good, now let's see it for all of these,
+
+219
+01:22:13,458 --> 01:22:15,625
+All of the episodes
+
+220
+01:22:15,625 --> 01:22:17,791
+Yay
+
+221
+01:22:18,791 --> 01:22:19,833
+That is working, but
+
+222
+01:22:19,833 --> 01:22:24,083
+It's kind of a small list as well
+
+223
+01:22:26,541 --> 01:22:29,916
+Just 55, well, 50 or so
+
+224
+01:22:32,000 --> 01:22:35,166
+Well, I mean, maybe it's fine
+Ok, this would be good enough already,
+
+225
+01:22:36,375 --> 01:22:38,583
+Maybe it's fine
+Ok, this would be good enough already,
+
+226
+01:22:38,583 --> 01:22:40,291
+Ok
+
+227
+01:22:40,291 --> 01:22:43,916
+This would be good enough already,
+
+228
+01:22:49,291 --> 01:22:51,125
+Let's double check, maybe
+
+229
+01:22:51,125 --> 01:22:52,958
+I missed some formatting
+
+230
+01:23:08,583 --> 01:23:10,666
+Yeah, I need to be careful about this
+
+231
+01:23:10,666 --> 01:23:12,083
+escaped HTML
+
+232
+01:23:21,208 --> 01:23:24,166
+It was there at least? Yeah
+
+233
+01:23:52,625 --> 01:23:55,666
+Why this one isn't detected?
+
+234
+01:24:05,208 --> 01:24:08,041
+Oh, because it says
+
+235
+01:24:08,041 --> 01:24:10,583
+not the "podcast" but the "episode"
+
+236
+01:24:11,666 --> 01:24:12,250
+alright
+
+237
+01:24:20,333 --> 01:24:22,625
+Now, this will be 3
+
+238
+01:24:25,625 --> 01:24:29,125
+65, ok, a bit more
+
+239
+01:24:51,666 --> 01:24:57,750
+Ok, before he also
+
+240
+01:24:57,750 --> 01:25:00,875
+formatted it differently
+
+241
+01:25:14,083 --> 01:25:16,833
+This is a bit more challenging because
+
+242
+01:25:16,833 --> 01:25:21,000
+format isn't always the same
+
+243
+01:25:23,000 --> 01:25:25,375
+But we can try anyway
+
+244
+01:25:28,000 --> 01:25:31,500
+So, it's either that regexp
+
+245
+01:25:31,500 --> 01:25:33,291
+or different one
+
+246
+01:25:33,291 --> 01:25:36,250
+regIntroOutro
+
+247
+01:25:42,500 --> 01:25:44,666
+and this one is...
+
+248
+01:25:50,916 --> 01:25:54,083
+Something like, I don't know...
+
+249
+01:25:56,166 --> 01:25:57,208
+Episode
+
+250
+01:27:15,708 --> 01:27:19,250
+Let's ignore the first one for now
+
+251
+01:27:19,250 --> 01:27:23,708
+and print out only these
+
+252
+01:27:23,708 --> 01:27:26,875
+"previously formatted" episodes
+
+253
+01:27:29,458 --> 01:27:30,958
+Alright
+
+254
+01:27:35,166 --> 01:27:39,500
+There is, I would say some kind of pattern,
+
+255
+01:27:39,500 --> 01:27:40,791
+let's try
+
+256
+01:27:47,416 --> 01:27:48,708
+So,
+
+257
+01:27:50,041 --> 01:27:51,375
+I need something like
+
+258
+01:27:51,375 --> 01:27:54,083
+everything, but what stops at word
+
+259
+01:27:54,083 --> 01:27:57,833
+"song" or "composition"
+
+260
+01:28:05,666 --> 01:28:08,458
+Song, composition or track
+
+261
+01:28:11,125 --> 01:28:13,916
+or cover
+
+262
+01:28:22,791 --> 01:28:27,291
+Maybe "song of some group"
+
+263
+01:28:44,000 --> 01:28:48,500
+Oops, track meaning...
+
+264
+01:29:07,916 --> 01:29:10,333
+And, ideally, to extract
+
+265
+01:29:10,333 --> 01:29:12,750
+name of the song and...
+
+266
+01:29:14,958 --> 01:29:16,583
+the author,
+
+267
+01:29:16,583 --> 01:29:18,208
+something like...
+
+268
+01:29:34,708 --> 01:29:37,416
+Singer, group, ...
+
+269
+01:29:59,833 --> 01:30:00,666
+Maybe not,
+
+270
+01:30:00,666 --> 01:30:02,458
+maybe it's getting to complicated
+
+271
+01:30:02,458 --> 01:30:05,875
+Let's extract just
+
+272
+01:30:05,875 --> 01:30:10,083
+this unhighlighted text on them...
+
+273
+01:30:14,958 --> 01:30:17,708
+This one isn't matched
+
+274
+01:31:39,041 --> 01:31:41,291
+Looks good, but
+
+275
+01:31:41,291 --> 01:31:43,791
+Yeah, maybe not as easy to
+
+276
+01:31:43,791 --> 01:31:45,833
+parse the "sub", let's see
+
+277
+01:31:50,250 --> 01:31:53,125
+First, parse the regexp,
+
+278
+01:31:53,125 --> 01:31:56,583
+maybe even like this...
+
+279
+01:32:04,958 --> 01:32:07,666
+And we need just the last match
+
+280
+01:32:17,000 --> 01:32:20,458
+Alright, it is in the end of the list, right?
+
+281
+01:32:20,458 --> 01:32:21,791
+Yes
+
+282
+01:32:24,041 --> 01:32:25,375
+Episode
+
+283
+01:32:26,333 --> 01:32:27,666
+Need to trim this a bit,
+
+284
+01:32:27,666 --> 01:32:29,416
+or, rather,
+
+285
+01:32:30,583 --> 01:32:32,500
+add an optional space maybe
+
+286
+01:32:34,000 --> 01:32:35,166
+Where is that?
+
+287
+01:32:36,500 --> 01:32:38,208
+"Smalltown Boy"
+
+288
+01:32:40,041 --> 01:32:43,166
+Oh yeah, there is that space
+
+289
+01:32:44,916 --> 01:32:50,625
+Wow, all... not all of... yes...
+
+290
+01:32:50,625 --> 01:32:51,916
+I can't...
+
+291
+01:32:51,916 --> 01:32:54,500
+I'd need put it down here
+
+292
+01:32:55,000 --> 01:32:56,625
+yes I can...
+
+293
+01:33:26,708 --> 01:33:30,250
+I need to trim the dot there as well
+
+294
+01:34:05,875 --> 01:34:07,708
+Okay
+
+295
+01:34:09,000 --> 01:34:12,125
+let's print alltogether
+
+296
+01:34:21,708 --> 01:34:23,500
+Oop, ah
+
+297
+01:34:23,500 --> 01:34:25,166
+There is space in there...
+
+298
+01:34:26,333 --> 01:34:28,000
+exists there as well
+
+299
+01:34:33,875 --> 01:34:35,250
+Why is that?
+
+300
+01:35:31,750 --> 01:35:32,750
+What is this?
+
+301
+01:35:35,708 --> 01:35:37,541
+This isn't space?
+
+302
+01:35:40,166 --> 01:35:41,583
+What is this??
+
+303
+01:35:59,166 --> 01:36:02,791
+Non-breaking space. Wow
+
+304
+01:36:03,916 --> 01:36:06,083
+Ok
+
+305
+01:36:07,416 --> 01:36:11,833
+Is there a regexp for non-breaking space?
+
+306
+01:38:27,125 --> 01:38:29,416
+Wow, now it didn't match anything
+
+307
+01:38:32,833 --> 01:38:37,083
+Alraight, I can trim it afterwards then
+
+308
+01:38:37,083 --> 01:38:41,583
+Let's see, "strings.TrimLeft"
+
+309
+01:38:45,375 --> 01:38:51,458
+and this non-breaking space
+
+310
+01:39:01,750 --> 01:39:04,666
+Yep, ok
+
+311
+01:39:04,666 --> 01:39:07,208
+Now, ...
+
+312
+01:39:08,416 --> 01:39:11,416
+author, and then track name,
+
+313
+01:39:13,125 --> 01:39:17,041
+where here is track name and then author
+
+314
+01:39:51,166 --> 01:39:55,083
+Let's keep it like this for now, and...
+
+315
+01:40:05,333 --> 01:40:09,625
+will see, maybe we will use just
+
+316
+01:40:09,625 --> 01:40:13,541
+Spotify API and it will match
+
+317
+01:40:13,541 --> 01:40:15,791
+the audio right
+
+318
+01:40:16,541 --> 01:40:18,458
+Now, to print this all
+
+319
+01:40:19,541 --> 01:40:21,458
+Actually, let's
+
+320
+01:40:21,875 --> 01:40:25,833
+yeah, just print all regexs
+
+321
+01:40:32,125 --> 01:40:35,083
+And save them into
+
+322
+01:40:35,291 --> 01:40:37,166
+some file
+
+323
+01:40:48,750 --> 01:40:52,833
+Here we go, about 102 tracks.
+
+324
+01:40:52,833 --> 01:40:54,958
+Exactly 102 tracks.
+
+325
+01:40:56,250 --> 01:40:57,916
+The next step
+
+326
+01:40:57,916 --> 01:41:00,208
+is to actually use
+
+327
+01:41:00,208 --> 01:41:02,500
+Spotify API and then
+
+328
+01:41:02,500 --> 01:41:04,791
+somehow to read this
+
+329
+01:41:15,166 --> 01:41:16,875
+This becomes part one
+
+330
+01:41:18,333 --> 01:41:20,041
+New main file
+
+331
+01:41:26,375 --> 01:41:27,583
+Let's actually copy
+
+332
+01:41:29,208 --> 01:41:31,041
+most of the stuff
+
+333
+01:41:42,000 --> 01:41:47,833
+It's gonna read "tracks.txt" and print it
+
+334
+01:42:17,541 --> 01:42:21,500
+This app is supposed to find
+
+335
+01:42:23,583 --> 01:42:26,583
+tracks in Spotify
+
+336
+01:42:28,666 --> 01:42:32,375
+Tracks listed in the file...
+
+337
+01:42:32,375 --> 01:42:33,583
+via API
+
+338
+01:42:38,166 --> 01:42:41,000
+Ok, file is there
+
+339
+01:42:43,750 --> 01:42:46,333
+Now, let's see
+
+340
+01:42:47,666 --> 01:42:50,375
+Stripe API... oh, Spotify API
+
+341
+01:42:50,375 --> 01:42:52,416
+Spotify API
+
+342
+01:42:56,541 --> 01:42:59,541
+Never worked with that
+
+343
+01:42:59,666 --> 01:43:02,583
+Spotify for Developers, yay
+
+344
+01:43:02,583 --> 01:43:04,500
+"Login into Spotify account"
+
+345
+01:43:04,500 --> 01:43:06,291
+"Create an app"
+
+346
+01:43:07,375 --> 01:43:09,541
+"authorization", get "access token"
+
+347
+01:43:09,541 --> 01:43:12,500
+"Use the token in your API requests"
+
+348
+01:43:12,500 --> 01:43:15,375
+"You can follow Get started...", okay
+
+349
+01:43:16,791 --> 01:43:20,208
+"Tutorial", "you have a Spotify account" (I do)
+
+350
+01:43:20,500 --> 01:43:22,458
+"We will use cURL" – nice
+
+351
+01:43:26,375 --> 01:43:28,916
+So, let's get to the Dashboard
+
+352
+01:43:36,041 --> 01:43:37,791
+"A few moments later"
+
+353
+01:43:40,875 --> 01:43:42,583
+"Create an app"
+
+354
+01:43:45,041 --> 01:43:46,708
+Import tracks
+
+355
+01:43:49,125 --> 01:43:50,125
+App...
+
+356
+01:43:52,916 --> 01:43:57,541
+searches tracks in Spotify
+
+357
+01:43:59,916 --> 01:44:04,125
+by name and adds them to
+
+358
+01:44:04,125 --> 01:44:07,666
+specified playlist
+
+359
+01:44:09,875 --> 01:44:11,916
+Website? Sure
+
+
+360
+01:44:15,708 --> 01:44:17,750
+Redirect URI,
+
+361
+01:44:22,166 --> 01:44:25,000
+I'm pretty sure I'm gonna use localhost
+
+362
+01:44:25,000 --> 01:44:26,000
+for now
+
+363
+01:44:29,041 --> 01:44:32,000
+"spotify-callback"
+
+364
+01:44:40,125 --> 01:44:41,000
+"Save"
+
+365
+01:44:44,666 --> 01:44:45,541
+"Settings"
+
+366
+01:44:47,208 --> 01:44:49,625
+"Client ID"
+
+367
+01:44:53,208 --> 01:44:54,875
+and "Client Secret"
+
+368
+01:44:54,875 --> 01:44:56,833
+And don't worry,
+
+369
+01:44:56,833 --> 01:44:59,041
+before publising this video I will
+
+370
+01:44:59,041 --> 01:45:00,375
+rotate the secret,
+
+371
+01:45:00,375 --> 01:45:02,083
+so don't even bother
+
+372
+01:45:05,833 --> 01:45:08,291
+And that's it,
+
+373
+01:45:08,291 --> 01:45:09,625
+it, let's see what else
+
+374
+01:45:14,125 --> 01:45:16,916
+Get the token with the secret
+
+375
+01:45:16,916 --> 01:45:20,208
+Access token for 1 hour, I think
+
+376
+01:45:22,208 --> 01:45:24,791
+And then we can do some things like this
+
+377
+01:45:27,916 --> 01:45:29,291
+And there is Search API
+
+378
+01:45:29,291 --> 01:45:31,416
+Search for an item, yay
+
+379
+01:45:32,541 --> 01:45:36,166
+Query, Album,
+
+380
+01:45:36,166 --> 01:45:37,750
+Market
+
+381
+01:45:41,333 --> 01:45:44,833
+Ok, so first of all,
+
+382
+01:45:44,833 --> 01:45:46,625
+this is the Search API
+
+383
+01:45:46,625 --> 01:45:49,416
+And for playlist,
+
+384
+01:45:50,000 --> 01:45:52,708
+I want to get playlist, or maybe
+
+385
+01:45:54,958 --> 01:45:56,291
+list them?
+
+386
+01:45:56,708 --> 01:45:57,833
+Even maybe create one,
+
+387
+01:45:57,833 --> 01:45:59,166
+let's create one
+
+388
+01:46:01,250 --> 01:46:04,333
+"Create playlist" and
+
+389
+01:46:04,333 --> 01:46:07,291
+"Add item to the playlist"
+
+390
+01:46:17,125 --> 01:46:19,416
+"playlist_id", "position", "uris",
+
+391
+01:46:19,416 --> 01:46:21,208
+"uri", all that...
+
+392
+01:46:21,208 --> 01:46:22,541
+these tracks
+
+393
+01:46:27,416 --> 01:46:31,250
+Seems to be more or less clear
+
+394
+01:46:33,041 --> 01:46:35,958
+One thing anyway I also wanted to check is also
+
+395
+01:46:35,958 --> 01:46:38,125
+API rate limits
+
+396
+01:46:47,541 --> 01:46:50,416
+"rolling 30 second window", alright
+
+397
+01:46:52,208 --> 01:46:54,333
+How many? How many calls?
+
+398
+01:46:58,083 --> 01:46:59,083
+"Exceeds"
+
+399
+01:47:01,833 --> 01:47:05,125
+Well, it doesn't tell you, maybe
+
+400
+01:47:05,125 --> 01:47:06,500
+Maybe it's in the dashboard
+
+401
+01:47:11,625 --> 01:47:12,583
+Quota, ...
+
+402
+01:47:12,583 --> 01:47:13,583
+quota extension request
+
+403
+01:47:14,791 --> 01:47:16,416
+in the dashboard
+
+404
+01:47:26,625 --> 01:47:30,541
+Nah, alright, there is some API request limit
+
+405
+01:47:34,166 --> 01:47:36,333
+Afterall, I don't think that
+
+406
+01:47:36,333 --> 01:47:37,708
+we will esceed this then
+
+407
+01:47:41,791 --> 01:47:44,333
+Well, well, well, well
+
+408
+01:47:44,875 --> 01:47:46,625
+First of all, secrets
+
+409
+01:47:49,000 --> 01:47:53,333
+SPOTIFY_CLIENT_ID
+
+410
+01:47:53,333 --> 01:47:55,083
+is this one
+
+411
+01:48:01,375 --> 01:48:07,583
+SPOTIFY_CLIENT_SECRET...
+
+412
+01:48:08,583 --> 01:48:09,458
+this one
+
+413
+01:48:15,250 --> 01:48:18,583
+Now, I need to read this from environment variables
+
+414
+01:49:26,791 --> 01:49:29,500
+New dependency, the first one
+
+415
+01:49:29,500 --> 01:49:30,500
+go get,
+
+416
+01:49:33,416 --> 01:49:35,083
+go mod vendor
+
+417
+01:49:35,083 --> 01:49:37,208
+go mod tidy
+
+418
+01:49:43,541 --> 01:49:45,166
+Now we have this dependency
+
+419
+01:49:45,166 --> 01:49:47,333
+and this indirect dependency
+
+420
+01:49:47,750 --> 01:49:49,625
+Which is fine,
+
+421
+01:49:49,625 --> 01:49:51,583
+it's all downloaded here
+
+422
+01:49:51,583 --> 01:49:53,333
+which I will commit
+
+423
+01:49:58,375 --> 01:50:00,916
+Parsed the environment variables,
+
+424
+01:50:00,916 --> 01:50:03,666
+now to configure Stripe API client
+
+
+425
+01:50:04,875 --> 01:50:06,916
+Is there any...
+
+426
+01:50:06,916 --> 01:50:07,875
+egh, not Stripe
+
+427
+01:50:08,083 --> 01:50:09,916
+Is there any Spotify...
+
+428
+01:50:11,500 --> 01:50:12,833
+Go client?
+
+429
+01:50:12,833 --> 01:50:14,083
+There are should be
+
+430
+01:50:17,333 --> 01:50:21,583
+From some guy zmb3 wrapper
+
+431
+01:50:22,500 --> 01:50:23,958
+Can not read this GoDoc
+
+432
+01:50:25,208 --> 01:50:26,666
+ Wrapper, ...
+
+433
+01:50:34,208 --> 01:50:35,666
+Auth
+
+434
+01:50:37,041 --> 01:50:38,750
+Redirect URL
+
+435
+01:50:41,125 --> 01:50:45,333
+Redirect handler, client
+
+436
+01:50:48,375 --> 01:50:50,958
+Authorization Guide
+
+437
+01:50:54,958 --> 01:50:57,875
+Ok, and what can you do then?
+
+438
+01:51:02,458 --> 01:51:05,875
+AddTracksToPlaylists – yes
+
+439
+01:51:08,333 --> 01:51:11,250
+Create playlist, maybe?
+
+440
+01:51:12,208 --> 01:51:14,250
+GetPlaylist
+
+441
+01:51:21,541 --> 01:51:24,208
+CreatePlaylistForUser
+
+442
+01:51:24,375 --> 01:51:25,375
+Alright
+
+443
+01:51:31,333 --> 01:51:32,333
+Search
+
+444
+01:51:36,541 --> 01:51:39,833
+Search query, with options as well
+
+445
+01:51:40,625 --> 01:51:42,041
+What are the options?
+
+446
+01:51:42,041 --> 01:51:44,750
+Limit number of items, ok
+
+447
+01:51:46,541 --> 01:51:50,375
+And in search result we will at Tracks
+
+448
+01:51:52,583 --> 01:51:54,791
+FullTrack with...
+
+449
+01:51:55,708 --> 01:51:57,416
+I need ID
+
+450
+01:51:58,041 --> 01:52:00,833
+And SimpleTrack has an ID, ok
+
+451
+01:52:02,416 --> 01:52:03,416
+I think...
+
+452
+01:52:03,416 --> 01:52:05,958
+Let's see also
+
+453
+01:52:05,958 --> 01:52:06,958
+Apache-2.0
+
+454
+01:52:11,041 --> 01:52:14,625
+Modification,
+
+455
+01:52:14,625 --> 01:52:16,416
+copyright notice...
+
+456
+01:52:16,416 --> 01:52:18,708
+will be in the vendor
+
+457
+01:52:21,791 --> 01:52:23,333
+This one is MIT
+
+458
+01:52:26,166 --> 01:52:28,750
+Stars... 1000
+
+459
+01:52:28,750 --> 01:52:31,958
+January 7th last release
+
+460
+01:52:35,250 --> 01:52:37,000
+Which actions do you have?
+
+461
+01:52:38,375 --> 01:52:40,416
+golangci-lint
+
+462
+01:52:44,250 --> 01:52:47,833
+Didn't update actions yet,
+
+463
+01:52:48,708 --> 01:52:53,541
+Which isn't that much time left I think, right?
+
+464
+01:52:55,208 --> 01:52:57,583
+When do they deprecating this?
+
+465
+01:53:01,166 --> 01:53:03,958
+Summer this year... 
+
+466
+01:53:03,958 --> 01:53:06,750
+plan to migrate, ...
+
+467
+01:53:06,750 --> 01:53:09,041
+deprecation process,
+
+468
+01:53:10,708 --> 01:53:13,416
+effort... September 27th,
+
+469
+01:53:13,416 --> 01:53:15,333
+You don't have that much time
+
+470
+01:53:15,333 --> 01:53:17,333
+Have any PRs open?
+
+471
+01:53:19,083 --> 01:53:21,666
+ID, item...
+
+472
+01:53:32,083 --> 01:53:33,083
+Well, ok,
+
+473
+01:53:34,250 --> 01:53:36,916
+maybe will create an issue for this later
+
+474
+01:53:38,166 --> 01:53:39,166
+Meanwhile,
+
+475
+01:53:40,875 --> 01:53:43,583
+all I need is just the code
+
+476
+01:53:43,583 --> 01:53:45,125
+So go get...
+
+477
+01:53:45,125 --> 01:53:47,250
+oops, oh yeah
+
+478
+01:53:54,416 --> 01:53:56,041
+Protobuf?
+
+479
+01:53:56,041 --> 01:53:57,041
+AppEngine?
+
+480
+01:54:29,458 --> 01:54:31,791
+This looks like hallucination
+
+481
+01:54:32,375 --> 01:54:33,375
+New client
+
+482
+01:55:45,208 --> 01:55:47,875
+Why do you require AppEngine
+
+483
+01:55:47,875 --> 01:55:50,541
+and TWO versions of Protobuf?
+
+484
+01:55:50,541 --> 01:55:52,041
+Why?
+
+485
+01:56:11,875 --> 01:56:13,708
+Let's see, 
+
+486
+01:56:14,583 --> 01:56:17,833
+right, now... some other dependencies you have
+
+487
+01:56:17,833 --> 01:56:19,916
+reference Protobuf then
+
+488
+01:56:22,250 --> 01:56:26,083
+Oh, you get it through this one?
+
+489
+01:56:33,000 --> 01:56:34,208
+Well, of course
+
+490
+01:56:40,583 --> 01:56:43,333
+Where are your dependencies?
+
+491
+01:56:53,625 --> 01:56:56,875
+oAuth2/internal and from there,
+
+492
+01:56:56,875 --> 01:56:57,666
+there is Protobuf
+
+493
+01:56:57,666 --> 01:57:00,708
+Because everyone needs Protobuf, ok
+
+494
+01:57:04,625 --> 01:57:07,041
+Token, internal,
+
+495
+01:57:18,833 --> 01:57:22,708
+and here is our AppEngine with urlfetch
+
+496
+01:57:26,833 --> 01:57:29,708
+Just out of curiosity,
+
+497
+01:57:29,708 --> 01:57:33,416
+ is there any other "in Go" client?
+
+498
+01:57:33,416 --> 01:57:37,291
+Terminal UI
+
+499
+01:58:06,750 --> 01:58:07,750
+Yeah,
+
+500
+01:58:08,958 --> 01:58:11,333
+dosn't look like it, alright
+
+501
+01:58:12,583 --> 01:58:14,708
+Redirect URL
+
+502
+01:58:41,041 --> 01:58:42,500
+What's next?
+
+503
+01:58:53,083 --> 01:58:55,625
+SetAuth,
+
+504
+01:58:55,625 --> 01:58:58,666
+get URL for auth...
+
+505
+01:59:08,208 --> 01:59:10,750
+and handle redirect
+
+506
+01:59:40,791 --> 01:59:43,291
+Authenticator
+
+507
+02:00:54,291 --> 02:00:55,791
+It's not true
+
+508
+02:01:00,625 --> 02:01:02,666
+Goes in the Options...
+
+509
+02:01:04,916 --> 02:01:06,750
+In the New, alright
+
+510
+02:01:29,125 --> 02:01:30,958
+What is the state?
+
+511
+02:01:34,666 --> 02:01:38,250
+"Unique state identifying the session"
+
+512
+02:02:03,708 --> 02:02:09,375
+What's here is some random string
+
+513
+02:02:23,250 --> 02:02:27,000
+It's not random enough, come on
+
+514
+02:02:43,875 --> 02:02:46,208
+Oh, thant's fine
+
+515
+02:02:51,291 --> 02:02:54,000
+Let's print this URL
+
+516
+02:02:58,875 --> 02:03:00,791
+Alright, 
+
+517
+02:03:00,791 --> 02:03:03,500
+read the environment variables
+
+518
+02:03:05,666 --> 02:03:09,291
+So this is the URL we need to click
+
+519
+02:03:09,291 --> 02:03:11,458
+Oh come on
+
+520
+02:03:11,458 --> 02:03:13,041
+"Invalid redirect URI"
+
+521
+02:03:15,958 --> 02:03:17,208
+Oops, yeah
+
+522
+02:03:23,583 --> 02:03:25,500
+"View your Spotify data"
+
+523
+02:03:25,500 --> 02:03:30,083
+I want more than just "view", so...
+
+524
+02:03:31,791 --> 02:03:33,666
+"WithScopes"...
+
+525
+02:03:39,750 --> 02:03:41,208
+Do we set sopes?
+
+526
+02:03:42,083 --> 02:03:44,166
+"Scopes – strings"
+
+527
+02:03:46,125 --> 02:03:49,333
+Let's see documentation what scopes
+
+528
+02:03:49,333 --> 02:03:50,375
+are there
+
+529
+02:04:03,666 --> 02:04:07,041
+"playlist-read-private"
+
+530
+02:04:16,291 --> 02:04:20,375
+"PlaylistModifyPrivate"
+
+531
+02:04:25,833 --> 02:04:26,833
+What else?
+
+532
+02:04:27,166 --> 02:04:28,250
+Search
+
+533
+02:04:41,666 --> 02:04:44,416
+This should be enought I think
+
+534
+02:05:05,833 --> 02:05:09,166
+"View your activity, take actions",
+
+535
+02:05:09,166 --> 02:05:11,166
+yes
+
+536
+02:05:11,666 --> 02:05:13,375
+And when I agree
+
+537
+02:05:13,375 --> 02:05:14,666
+it goes to localhost,
+
+538
+02:05:14,666 --> 02:05:16,875
+but nothing listens there
+
+539
+02:05:19,625 --> 02:05:21,166
+Let's fix that
+
+540
+02:05:43,375 --> 02:05:45,833
+I'm kinda need to run server,
+
+541
+02:05:45,833 --> 02:05:46,791
+but
+
+542
+02:05:46,791 --> 02:05:48,833
+stop it afterwards.
+
+543
+02:06:57,541 --> 02:06:59,750
+I need Context
+
+544
+02:07:03,291 --> 02:07:05,500
+Which one?
+
+545
+02:07:11,083 --> 02:07:13,083
+Let's create a background one 
+
+546
+02:07:46,666 --> 02:07:53,291
+Ideally I want to save this token for the next start
+
+547
+02:07:55,833 --> 02:07:57,708
+And
+
+548
+02:07:57,708 --> 02:08:01,416
+this starting to look pretty massive, so
+
+549
+02:08:01,416 --> 02:08:06,041
+I want to extract it into a separate file
+
+550
+02:08:06,041 --> 02:08:07,916
+in a few minutes
+
+551
+02:08:12,750 --> 02:08:15,708
+So once I have the token
+
+552
+02:08:56,041 --> 02:08:59,708
+I can just encode this JSON
+
+553
+02:10:17,416 --> 02:10:22,125
+So this will save the token 
+
+554
+02:10:28,083 --> 02:10:30,041
+Let's try
+
+555
+02:10:31,000 --> 02:10:34,041
+Well, I didn't start the server
+
+556
+02:10:50,416 --> 02:10:52,250
+"Could not get token"
+
+557
+02:11:00,875 --> 02:11:02,250
+Why?
+
+558
+02:11:42,125 --> 02:11:45,375
+"Invalid client secret"
+
+559
+02:11:45,375 --> 02:11:47,250
+Interesting
+
+560
+02:11:48,583 --> 02:11:51,250
+Oops, there is a typo, I think
+
+561
+02:11:57,250 --> 02:11:58,250
+Yeah
+
+562
+02:12:05,500 --> 02:12:06,666
+Now what?
+
+563
+02:12:06,666 --> 02:12:08,791
+Same error, oh, I didn't refresh the
+
+564
+02:12:08,791 --> 02:12:10,250
+environment variables
+
+565
+02:12:15,125 --> 02:12:18,083
+Okay, now there should be token there.
+
+566
+02:12:18,083 --> 02:12:18,916
+Yay
+
+567
+02:12:21,416 --> 02:12:22,708
+Let's see...
+
+568
+02:12:23,291 --> 02:12:24,125
+Ok
+
+569
+02:12:26,125 --> 02:12:28,291
+Token is there
+
+570
+02:12:34,583 --> 02:12:38,541
+Let's say the purpose of this particular
+
+571
+02:12:38,541 --> 02:12:40,166
+app is to grab the token,
+
+572
+02:12:40,166 --> 02:12:42,208
+so, this one is done
+
+573
+02:13:26,500 --> 02:13:28,000
+Once we get the token,
+
+574
+02:13:28,000 --> 02:13:30,416
+"os.Exit(0)"
+
+575
+02:13:30,416 --> 02:13:31,916
+And something like
+
+576
+02:13:36,333 --> 02:13:38,208
+"Token saved to file"
+
+577
+02:13:38,208 --> 02:13:39,750
+And this should be enough
+
+578
+02:13:41,833 --> 02:13:44,083
+Let's double check one more time that its working
+
+579
+02:13:44,083 --> 02:13:46,166
+I'm gonna remove the token
+
+580
+02:13:46,625 --> 02:13:50,875
+And run this again
+
+581
+02:13:54,625 --> 02:13:56,708
+"Refused to connect"?
+
+582
+02:13:59,375 --> 02:14:03,083
+Well, token is there, that's all what relevant
+
+583
+02:14:04,625 --> 02:14:08,958
+In theory I could tell to the user that
+
+584
+02:14:08,958 --> 02:14:09,958
+all is good
+
+585
+02:14:09,958 --> 02:14:11,500
+Something like
+
+586
+02:14:25,500 --> 02:14:27,291
+"print success message and exit"
+
+587
+02:14:28,416 --> 02:14:30,208
+"Login Comlpeted!"
+
+588
+02:14:31,416 --> 02:14:33,625
+Ok, let's try
+
+589
+02:14:39,083 --> 02:14:40,958
+Egh, whatever
+
+590
+02:14:40,958 --> 02:14:41,958
+I'd rather do that later
+
+591
+02:14:43,291 --> 02:14:45,000
+This token is saved,
+
+592
+02:14:45,000 --> 02:14:48,166
+so I'm gonna use this in the next app
+
+593
+02:14:49,958 --> 02:14:54,125
+So, the actual purpose of this app is to
+
+594
+02:14:54,125 --> 02:14:55,583
+grab
+
+595
+02:14:55,583 --> 02:14:59,125
+token from Spotify API and save it to file
+
+596
+02:15:03,666 --> 02:15:05,041
+New app
+
+597
+02:15:23,750 --> 02:15:26,833
+It's gonna be partly the same
+
+598
+02:15:31,083 --> 02:15:32,666
+This one
+
+599
+02:15:32,666 --> 02:15:35,666
+Use token file
+
+600
+02:15:35,666 --> 02:15:36,958
+to
+
+601
+02:15:41,750 --> 02:15:47,000
+Create Spotify client and
+
+602
+02:15:47,000 --> 02:15:49,666
+handle tracks
+
+603
+02:15:55,458 --> 02:15:57,833
+No need for redirect anymore
+
+604
+02:16:16,833 --> 02:16:20,333
+I would need some context background
+
+605
+02:16:21,416 --> 02:16:26,166
+And now I need to create client, finally
+
+606
+02:16:30,458 --> 02:16:32,166
+How to do this, again?
+
+607
+02:16:32,166 --> 02:16:33,916
+"auth.NewClient"
+
+608
+02:17:39,750 --> 02:17:42,500
+So, just "Client", alright
+
+609
+02:17:47,166 --> 02:17:50,708
+And I'll need to read the token from file
+
+610
+02:17:58,291 --> 02:18:00,375
+If it were that easy
+
+611
+02:19:10,208 --> 02:19:15,250
+Alright, Client should be created this way then
+
+612
+02:19:16,416 --> 02:19:19,250
+Actually, let's extract this into something like
+
+613
+02:19:19,250 --> 02:19:21,250
+"createClient"
+
+614
+02:19:27,458 --> 02:19:29,625
+All I need is
+
+615
+02:19:30,375 --> 02:19:32,291
+HTTP client
+
+616
+02:19:32,291 --> 02:19:36,041
+To talk to Spotify
+
+617
+02:20:59,500 --> 02:21:01,375
+Wait a second, where are all these
+
+618
+02:21:01,375 --> 02:21:03,916
+convenient methods
+
+619
+02:21:04,833 --> 02:21:07,541
+that I would use on the client itself
+
+620
+02:21:07,541 --> 02:21:09,125
+Like Playlist
+"PlaylistTracks"
+
+621
+02:21:10,083 --> 02:21:11,791
+"PlaylistTracks"
+
+622
+02:21:13,000 --> 02:21:14,666
+Get playlist from the client
+
+623
+02:21:14,666 --> 02:21:18,125
+Client is this one, not "http", oh
+
+624
+02:21:32,666 --> 02:21:35,791
+Do I need to manually create one?
+
+625
+02:21:38,000 --> 02:21:38,750
+What?
+
+626
+02:21:46,416 --> 02:21:47,916
+"Retry"...
+
+627
+02:22:37,250 --> 02:22:39,750
+Now we're talking
+
+628
+02:22:39,750 --> 02:22:42,041
+Let's get current user
+
+629
+02:22:54,875 --> 02:22:58,333
+I am logged in, yes!
+
+630
+02:23:00,083 --> 02:23:03,291
+Ok, this is the final stretch, I guess
+
+631
+02:23:08,791 --> 02:23:11,458
+We need to open the file with the tracks,
+
+632
+02:23:11,458 --> 02:23:14,208
+go over each track
+
+633
+02:23:18,333 --> 02:23:20,166
+Then,
+
+634
+02:23:22,750 --> 02:23:24,583
+search the track...
+
+635
+02:23:24,583 --> 02:23:25,583
+Let's start with that
+
+636
+02:24:11,416 --> 02:24:15,166
+I want to read file line by line
+
+637
+02:24:57,333 --> 02:24:59,875
+And yeah, this time we don't need to use any
+
+638
+02:24:59,875 --> 02:25:02,250
+configs or client,
+
+639
+02:25:02,250 --> 02:25:04,708
+just reading tracks line by line
+
+640
+02:25:06,541 --> 02:25:09,416
+Nice, now
+
+641
+02:25:10,083 --> 02:25:12,083
+I need to handle it
+
+642
+02:25:19,625 --> 02:25:22,125
+Handle it with the client
+
+643
+02:25:29,625 --> 02:25:32,000
+What does "handle" mean?
+
+644
+02:25:47,791 --> 02:25:51,041
+"Handle" mean search for this track
+
+645
+02:26:03,833 --> 02:26:06,166
+I only need tracks,
+
+646
+02:26:09,250 --> 02:26:13,458
+with, I don't know, limit of 10, maybe
+
+647
+02:26:42,583 --> 02:26:48,583
+Let's handle just the first line first
+
+648
+02:26:51,083 --> 02:26:52,083
+Wait, wait, wait, stop
+I need to ad break, I though...
+
+649
+02:26:57,458 --> 02:26:59,708
+Yeah,
+
+650
+02:26:59,708 --> 02:27:02,416
+so in the tracks the first line
+
+651
+02:27:02,416 --> 02:27:05,125
+"Blawan – Under Belly"
+
+652
+02:27:05,541 --> 02:27:07,083
+And here is the track
+
+653
+02:27:11,333 --> 02:27:13,916
+That kinda works
+
+654
+02:27:26,083 --> 02:27:28,583
+How about
+
+655
+02:27:33,083 --> 02:27:35,333
+something like that?
+
+656
+02:27:54,958 --> 02:27:57,083
+That works too
+
+657
+02:28:01,875 --> 02:28:04,000
+Thing with it...
+
+658
+02:28:06,916 --> 02:28:09,375
+with a typo still works
+
+659
+02:28:09,375 --> 02:28:10,833
+(the first item)
+
+660
+02:28:10,833 --> 02:28:12,458
+What about this one?
+
+661
+02:28:17,625 --> 02:28:19,625
+Two tracks, but
+
+662
+02:28:19,625 --> 02:28:21,458
+I think the first one just
+
+663
+02:28:21,458 --> 02:28:23,291
+would do, let's see
+
+664
+02:28:27,208 --> 02:28:28,583
+Two tracks,
+
+665
+02:28:29,583 --> 02:28:30,958
+one from...
+
+666
+02:29:16,541 --> 02:29:19,541
+Okay, this is the first example of this not
+
+667
+02:29:19,541 --> 02:29:20,916
+really working,
+
+668
+02:29:21,958 --> 02:29:24,458
+And I think this is acceptable
+
+669
+02:29:24,458 --> 02:29:28,125
+Not every track we will be able to find
+
+670
+02:29:28,125 --> 02:29:29,625
+on Spotify
+
+671
+02:29:30,958 --> 02:29:33,416
+Although, this one is there.
+
+672
+02:29:36,166 --> 02:29:39,041
+How about
+
+673
+02:29:39,041 --> 02:29:43,000
+I remove this in between...
+
+674
+02:29:44,708 --> 02:29:46,833
+Ok, this one works
+
+675
+02:29:54,208 --> 02:29:56,291
+Works too
+
+676
+02:29:58,375 --> 02:30:01,500
+Okay, I'm gonna just gonna go with what I have,
+
+677
+02:30:01,500 --> 02:30:04,291
+I think it will work for most of the tracks
+
+678
+02:30:04,291 --> 02:30:07,250
+For those where it will not,
+
+679
+02:30:07,250 --> 02:30:10,125
+maybe I will add the wrong track
+
+680
+02:30:10,125 --> 02:30:12,041
+into the playlist
+
+681
+02:30:14,041 --> 02:30:17,791
+So, maybe some check will be required afterwards
+
+682
+02:30:30,083 --> 02:30:31,500
+But, first of all,
+
+683
+02:30:31,500 --> 02:30:34,041
+we need to create a new playlist
+
+684
+02:30:44,750 --> 02:30:48,250
+"CreatePlaylist" for my user
+
+685
+02:31:43,750 --> 02:31:44,750
+Public?
+
+686
+02:31:48,000 --> 02:31:50,208
+No description,
+
+687
+02:31:50,208 --> 02:31:52,666
+not public,
+
+688
+02:31:52,666 --> 02:31:55,125
+not collaborative yet
+
+689
+02:31:55,291 --> 02:31:59,083
+I may change this manually later in Spotify
+
+690
+02:31:59,083 --> 02:32:00,083
+And I only need to run this once,
+
+691
+02:32:02,166 --> 02:32:04,666
+so I will comment this out later
+
+692
+02:32:41,250 --> 02:32:43,541
+"FullPlaylist"...
+
+693
+02:33:20,708 --> 02:33:22,208
+Limit to one track.
+
+694
+02:33:22,208 --> 02:33:25,750
+The first one is the only one we care about
+
+695
+02:34:01,375 --> 02:34:06,375
+Return "err" if there is any error
+
+696
+02:34:07,875 --> 02:34:11,916
+Now, to my Spotify playlists
+
+697
+02:34:14,166 --> 02:34:19,500
+Yeah, I don't have this
+
+698
+02:34:19,500 --> 02:34:22,541
+"Odin Doma" playlist yet
+
+699
+02:34:25,041 --> 02:34:26,833
+So
+
+700
+02:34:26,833 --> 02:34:29,875
+This might be the time when it will create one
+
+701
+02:34:35,458 --> 02:34:40,541
+Wait, let me add some logging
+
+702
+02:34:51,791 --> 02:34:54,000
+"Creating playlist..."
+
+703
+02:34:59,291 --> 02:35:03,041
+"Reading tracks from file..."
+
+704
+02:35:10,958 --> 02:35:13,291
+"Searching for track..."
+
+705
+02:35:22,666 --> 02:35:25,875
+"Adding track to playlist..."
+
+706
+02:35:39,333 --> 02:35:41,000
+Alright
+
+707
+02:35:46,875 --> 02:35:52,583
+I might hit API rate limit error soon,
+
+708
+02:35:53,291 --> 02:35:55,375
+Will see how far it will go
+
+709
+02:36:25,291 --> 02:36:27,291
+And it's done,
+
+710
+02:36:27,291 --> 02:36:28,416
+Let's see,
+
+711
+02:36:28,416 --> 02:36:30,833
+(is there) any new playlists that I have? Ok
+
+712
+02:36:32,125 --> 02:36:34,250
+Looks like it created it twice
+
+713
+02:36:34,250 --> 02:36:37,208
+The first time I ran it without logging
+
+714
+02:36:37,208 --> 02:36:39,666
+And second time
+
+715
+02:36:39,666 --> 02:36:42,125
+when I let it run till the end
+
+716
+02:36:43,541 --> 02:36:45,125
+So I'm gonna delete this one,
+
+717
+02:36:45,125 --> 02:36:47,083
+I don't need this anyway
+
+718
+02:36:47,833 --> 02:36:51,166
+And here are we go,
+
+719
+02:36:51,166 --> 02:36:55,416
+this is the whole playlist with 102 tracks
+
+720
+02:36:57,125 --> 02:36:58,916
+I don't think...
+
+721
+02:36:58,916 --> 02:37:02,750
+Yeah, I have exactly 102 tracks, but
+
+722
+02:37:03,166 --> 02:37:03,958
+maybe,
+
+723
+02:37:03,958 --> 02:37:06,500
+maybe, not all of them are the correct ones
+
+724
+02:37:06,500 --> 02:37:08,000
+Let's check
+
+725
+02:37:17,166 --> 02:37:19,625
+I'm gonna go over this file...
+
+726
+02:37:19,625 --> 02:37:22,708
+Actually, let me create a backup
+
+727
+02:37:22,708 --> 02:37:25,625
+and in the original file I'm gonna go 
+
+728
+02:37:25,625 --> 02:37:27,833
+and remove what I think is a good match
+
+729
+02:37:27,833 --> 02:37:30,125
+So this one is definitely fine...
+
+730
+02:37:36,583 --> 02:37:39,541
+I think I wouldn't spend this much time for the last
+
+731
+02:37:39,541 --> 02:37:41,458
+for the last few minutes
+
+732
+02:37:41,458 --> 02:37:44,125
+trying to find the tracks
+
+733
+02:37:44,125 --> 02:37:45,958
+if I were
+
+734
+02:37:45,958 --> 02:37:49,416
+more careful with regexp,
+
+735
+02:37:50,708 --> 02:37:55,291
+I think I'm trimming too much somewhere...
+
+736
+02:37:57,875 --> 02:38:00,166
+somewhere maybe in here,
+
+737
+02:38:00,166 --> 02:38:01,625
+some last character
+
+738
+02:38:01,625 --> 02:38:04,000
+Also, I could've
+
+739
+02:38:04,000 --> 02:38:06,375
+remove text in between,
+
+740
+02:38:06,375 --> 02:38:09,916
+apprarently, that improves search results
+
+741
+02:38:12,333 --> 02:38:18,250
+And I also could've check the returned
+
+742
+02:38:18,250 --> 02:38:21,291
+Spotify track title
+
+743
+02:38:21,291 --> 02:38:24,125
+against the line content,
+
+744
+02:38:24,125 --> 02:38:26,875
+because sometimes
+
+745
+02:38:26,875 --> 02:38:29,458
+they don't exactly match,
+
+746
+02:38:29,458 --> 02:38:33,125
+like if they different
+
+747
+02:38:33,125 --> 02:38:35,250
+"apart from each other" for about 50%,
+
+748
+02:38:35,250 --> 02:38:37,041
+then I could report this
+
+749
+02:38:37,041 --> 02:38:39,208
+and not add track to the playlist
+
+750
+02:38:40,625 --> 02:38:43,416
+And that's about it
+
+751
+02:38:43,416 --> 02:38:44,958
+Thank you for watching,
+
+752
+02:38:44,958 --> 02:38:47,125
+Let me know what you think about this...
+
+753
+02:38:47,125 --> 02:38:51,000
+experimental coding excercise,
+
+754
+02:38:52,125 --> 02:38:54,583
+Feel free share any ideas in the comments,
+
+755
+02:38:54,583 --> 02:38:58,166
+Don't forget to like...
+
+756
+02:38:58,166 --> 02:38:59,250
+and subscribe?
+
+757
+02:38:59,250 --> 02:39:02,500
+I'm not sure if I will do this one more time,
+
+758
+02:39:02,500 --> 02:39:03,708
+probably will
+
+759
+02:39:05,458 --> 02:39:07,125
+Thank you for watching, bye
+
